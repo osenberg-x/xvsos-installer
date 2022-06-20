@@ -2,9 +2,9 @@
  # @Copyright: xvsos
  # @Author: xvs
  # @Date: 2022-06-20 09:25:51
- # @LastEditTime: 2022-06-20 13:06:26
+ # @LastEditTime: 2022-06-20 23:49:35
  # @LastEditors: OsenbergQu
- # @FilePath: \xvsos-installer\install.sh
+ # @FilePath: /xvsos-installer/install.sh
  # @Description: 
 ### 
 #! /bin/sh
@@ -16,7 +16,7 @@ config_pkg_source() {
   dir="/usr/local/etc/pkg/repos"
   mkdir -p  $dir
   echo "FreeBSD: {" >> $dir/FreeBSD.conf
-  echo "  url: \"pkg+http://mirrors.ustc.edu.cn/freebsd-pkg/${ABI}/latest\"" >> $dir/FreeBSD.conf
+  echo "  url: \"pkg+http://mirrors.ustc.edu.cn/freebsd-pkg/\${ABI}/latest\"" >> $dir/FreeBSD.conf
   # echo "  url: \"pkg+http://mirrors.ustc.edu.cn/freebsd-pkg/${ABI}/quarterly\""
   echo "}" >> $dir/FreeBSD.conf
 
@@ -34,7 +34,7 @@ config_ports_source() {
 
 install_system_env() {
   # install pkg
-  cd /usr/ports/ports-mgmt/pkg; make; make install clean
+  # cd /usr/ports/ports-mgmt/pkg; make; make install clean
   # sudo
   pkg install sudo
   echo "$user ALL=(ALL) ALL" >> /usr/local/etc/sudoers
@@ -45,16 +45,16 @@ install_system_env() {
 }
 
 config_desktop_common() {
-  pw groupmod video -m $xs
-  pkg install wayland seatd dbus drm-fbsd13-kmod libva-intel-driver
-  sysrc seatd_enable=”YES”
+  pw groupmod video -m $user
+  pkg install wayland seatd dbus drm-fbsd13-kmod libva-intel-driver amixer git
+  sysrc seatd_enable="YES"
   sysrc kld_list+=i915kms
-
-  mkdir -p $home/.config/runtime
-  export XDG_RUNTIME_DIR=$home/.config/runtime
 
   git clone https://gitee.com/mirrors/oh-my-zsh.git $home/.oh-my-zsh
   cp ./zshrc.zsh-template $home/.zshrc
+
+  mkdir -p $home/.config/runtime
+  echo "export XDG_RUNTIME_DIR=\$HOME/.config/runtime" >> $home/.zshrc
 }
 
 config_desktop_sway() {
@@ -66,8 +66,16 @@ config_desktop_sway() {
 
 config_desktop_wayfire() {
   pkg install wayfire wf-shell alacritty swaylock-effects swayidle wlogout kanshi mako wlsunset wofi
-  mkdir $home/.config/wayfire
   #cp /usr/local/etc/sway/config $home/.config/sway
-  cp ./sway/config $home/.config/sway
-  cp ./wayfire/wayfire.ini ~/.config/wayfire
+  cp ./wayfire.ini ~/.config/wayfire.ini
 }
+
+config_app() {
+  # install rust
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+}
+
+config_pkg_source()
+install_system_env()
+config_desktop_common()
+config_desktop_wayfire()
