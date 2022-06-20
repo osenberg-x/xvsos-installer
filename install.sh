@@ -2,12 +2,16 @@
  # @Copyright: xvsos
  # @Author: xvs
  # @Date: 2022-06-20 09:25:51
- # @LastEditTime: 2022-06-20 09:52:06
+ # @LastEditTime: 2022-06-20 10:28:26
  # @LastEditors: OsenbergQu
  # @FilePath: \xvsos-installer\install.sh
  # @Description: 
 ### 
 #! /bin/sh
+
+user=xs
+home=/home/$user
+
 function config_pkg_source {
   dir="/usr/local/etc/pkg/repos"
   mkdir -p  $dir
@@ -33,7 +37,7 @@ function install_system_env {
   cd /usr/ports/ports-mgmt/pkg; make; make install clean
   # sudo
   pkg install sudo
-  echo "xs ALL=(ALL) ALL" >> /usr/local/etc/sudoers
+  echo "$user ALL=(ALL) ALL" >> /usr/local/etc/sudoers
 
   # zsh, oh-my-zsh
   pkg install zsh
@@ -41,14 +45,18 @@ function install_system_env {
 }
 
 function config_desktop_sway {
-  pw groupmod video -m xs
-  pkg install wayland seatd
+  pw groupmod video -m $xs
+  pkg install wayland seatd dbus drm-fbsd13-kms
   sysrc seatd_enable=”YES”
 
-  mkdir -p ~/.config/runtime
-  export XDG_RUNTIME_DIR=~/.config/runtime
+  mkdir -p $home/.config/runtime
+  export XDG_RUNTIME_DIR=$home/.config/runtime
 
-  pkg install sway swayidle swaylock-effects alacritty dmenu-wayland dmenu wofi
-  mkdir ~/.config/sway
-  cp /usr/local/etc/sway/config ~/.config/sway
+  git clone https://gitee.com/mirrors/oh-my-zsh.git $home/.oh-my-zsh
+  cp ./zshrc.zsh-template $home/.zshrc
+
+  sudo pkg install sway swayidle swaylock-effects alacritty wofi
+  mkdir $home/.config/sway
+  #cp /usr/local/etc/sway/config $home/.config/sway
+  cp ./sway/config $home/.config/sway
 }
