@@ -2,7 +2,7 @@
  # @Copyright: xvsos
  # @Author: xvs
  # @Date: 2022-06-20 09:25:51
- # @LastEditTime: 2022-06-21 22:14:20
+ # @LastEditTime: 2022-06-21 22:15:57
  # @LastEditors: OsenbergQu
  # @FilePath: /xvsos-installer/install.sh
  # @Description: 
@@ -82,8 +82,8 @@ config_app() {
 
   # input method
   sudo pkg install fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt zh-fcitx5-rime zh-rime-essay
-  cp /usr/local/share/applications/org.fcitx.Fcitx5.desktop ~/.config/autostart/
   mkdir -p $home/.config/autostart
+  cp /usr/local/share/applications/org.fcitx.Fcitx5.desktop ~/.config/autostart/
 
   echo "#input method" >> $home/.zshrc
   echo "export GTK_IM_MODULE=fcitx" >> $home/.zshrc
